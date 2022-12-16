@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RootNamespace>tb_demo_SalesAreas</RootNamespace>
+    <RootNamespace>MMSDemoTrucks</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

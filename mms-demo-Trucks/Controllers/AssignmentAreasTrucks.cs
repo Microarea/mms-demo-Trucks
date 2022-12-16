@@ -1,10 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MMSDemoTrucks.ParametersModel;
 using MMSDemoTrucks.HelperQueries;
 using Newtonsoft.Json;
@@ -25,55 +22,6 @@ namespace MMSDemoTrucks.Controllers
             this.configuration = configuration;
             this.conn = this.configuration.GetValue<string>("ConnectionDbSQL:strConn");
         }
-
-        ///// <summary>
-        ///// This example shows you how to set the enabled/disabled status
-        ///// of your data
-        ///// </summary>
-        ///// <param name="request"></param>
-        ///// <returns></returns>
-        //[HttpPost("ControlsEnabled")]
-        //public ActionResult<BaseResponse> ControlsEnabled([FromBody] ControlsEnabledRequest request)
-        //{
-        //    BaseResponse response = new BaseResponse();
-        //    try
-        //    {
-        //        if (request is null)
-        //        {
-        //            response.Success = false;
-        //            response.ErrorMessage = new ErrorMessage("Request is bad formatted");
-        //            return new OkObjectResult(response);
-        //        }
-
-        //        if (request.ParamIn is null)
-        //        {
-        //            response.ReturnValue = string.Empty;
-        //            response.Success = true;
-        //            return new OkObjectResult(response);
-        //        }
-
-        //        request.ParamIn.ForEach(obj =>
-        //        {
-        //            obj.Area.IsReadOnly = true;
-        //            obj.AreaDescription.IsReadOnly = true;
-        //            obj.TruckCode.IsReadOnly = true;
-        //            obj.TruckDescription.IsReadOnly = true;
-        //            obj.TruckPlate.IsReadOnly = true;
-        //        });
-
-        //        response.ReturnValue = request.ParamIn;
-        //        response.Success = true;
-        //        return new OkObjectResult(response);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        //throw new Exception("MyBatchBLController ControlsEnabled exception  ", e);
-        //        response.Success = false;
-        //        response.ErrorMessage = new ErrorMessage(e.Message);
-        //        return new OkObjectResult(response);
-        //    }
-        //}
-
 
         /// <summary>
         /// Executes the query to extract data and populate the grid 
