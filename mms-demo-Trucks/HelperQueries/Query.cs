@@ -18,7 +18,7 @@ namespace MMSDemoTrucks.HelperQueries
             this.conn = conn;
         }
 
-        public string ReadFrom(string entity, string filterField = null, string from = null, string to = null)
+        public async Task<string> ReadFrom(string entity, string filterField = null, string from = null, string to = null)
         {
             string jsonRes = string.Empty;
             List<Dictionary<string, string>> table = new List<Dictionary<string, string>>();
@@ -44,7 +44,7 @@ namespace MMSDemoTrucks.HelperQueries
                 using (NpgsqlCommand cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = new NpgsqlConnection(this.conn);
-                    cmd.Connection.Open();
+                    await cmd.Connection.OpenAsync();
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandText = sb.ToString();
                     if (createParameters)
@@ -61,20 +61,18 @@ namespace MMSDemoTrucks.HelperQueries
                         sqlParam.Value = to;
                         cmd.Parameters.Add(sqlParam);
                     }
-                    //using (cmd)
-                    using (NpgsqlDataReader reader = cmd.ExecuteReader())
+                    using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         while (reader.Read())
                         {
-                            //List<Tuple<string, object>> row = new List<Tuple<string, object>>();
                             Dictionary<string, string> row = new Dictionary<string, string>();
                             int nCols = reader.FieldCount;
                             for (int i = 0; i < nCols; i++)
                                 row.Add(reader.GetName(i), reader[i].ToString());
                             table.Add(row);
                         }
-                        reader.Close();
-                        cmd.Connection.Close();
+                        await reader.CloseAsync();
+                        await cmd.Connection.CloseAsync();
                     }
                 }           
             }
@@ -90,7 +88,7 @@ namespace MMSDemoTrucks.HelperQueries
             return jsonRes;
         }
     
-        public List<string> ReadFromLogical(string entity, string owner, bool isMaster, bool isOneToMany = false)
+        public async Task<List<string>> ReadFromLogical(string entity, string owner, bool isMaster, bool isOneToMany = false)
         {
             List<string> table = new List<string>();
             NpgsqlParameter sqlParam = null;
@@ -101,7 +99,7 @@ namespace MMSDemoTrucks.HelperQueries
                 using (NpgsqlCommand cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = new NpgsqlConnection(this.conn);
-                    cmd.Connection.Open();
+                    await cmd.Connection.OpenAsync();
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandText = sb.ToString();
                     
@@ -118,14 +116,14 @@ namespace MMSDemoTrucks.HelperQueries
                     cmd.Parameters.Add(sqlParam);
                     
                     //using (cmd)
-                    using (NpgsqlDataReader reader = cmd.ExecuteReader())
+                    using (NpgsqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
                         while (reader.Read())
                         {
                             table.Add(reader.GetString("content"));
                         }
-                        reader.Close();
-                        cmd.Connection.Close();
+                        await reader.CloseAsync();
+                        await cmd.Connection.CloseAsync();
                     }
                 }
             }
@@ -141,7 +139,7 @@ namespace MMSDemoTrucks.HelperQueries
             return table;
         }
     
-        public bool ClearFromLogical(string entity, string owner, bool isMaster, bool isOneToMany = false)
+        public async Task<bool> ClearFromLogical(string entity, string owner, bool isMaster, bool isOneToMany = false)
         {
             bool success = true;
             NpgsqlParameter sqlParam = null;
@@ -152,7 +150,7 @@ namespace MMSDemoTrucks.HelperQueries
                 using (NpgsqlCommand cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = new NpgsqlConnection(this.conn);
-                    cmd.Connection.Open();
+                    await cmd.Connection.OpenAsync();
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandText = sb.ToString();
 
@@ -168,8 +166,8 @@ namespace MMSDemoTrucks.HelperQueries
                     sqlParam.Value = owner;
                     cmd.Parameters.Add(sqlParam);
 
-                    cmd.ExecuteNonQuery();
-                    cmd.Connection.Close();
+                    await cmd.ExecuteNonQueryAsync();
+                    await cmd.Connection.CloseAsync();
                     
                 }
             }
@@ -186,7 +184,7 @@ namespace MMSDemoTrucks.HelperQueries
             return success;
         }
 
-        public bool SaveEntityIntoLogicalTable(string entity, string owner, 
+        public async Task<bool> SaveEntityIntoLogicalTable(string entity, string owner, 
                     string jsonContent, string keys, string parentkeys, bool isMaster, bool isOneToMany = false)
         {
             bool success = true;
@@ -199,7 +197,7 @@ namespace MMSDemoTrucks.HelperQueries
                 using (NpgsqlCommand cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = new NpgsqlConnection(this.conn);
-                    cmd.Connection.Open();
+                    await cmd.Connection.OpenAsync();
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandText = sb.ToString();
 
@@ -233,8 +231,8 @@ namespace MMSDemoTrucks.HelperQueries
                     sqlParam.Value = jsonContent;
                     cmd.Parameters.Add(sqlParam);
 
-                    success = cmd.ExecuteNonQuery() > 0;
-                    cmd.Connection.Close();
+                    success = await cmd.ExecuteNonQueryAsync() > 0;
+                    await  cmd.Connection.CloseAsync();
                 }
             }
             catch (NpgsqlException exc)

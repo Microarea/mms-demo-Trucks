@@ -13,24 +13,24 @@ namespace MMSDemoTrucks.ParametersModel
         /// AllAreas
         /// </summary>
         [JsonProperty("AllAreas")]
-        public bool AllAreas { get; set; }
+        public bool? AllAreas { get; set; }
 
         /// <summary>
         /// SelectArea
         /// </summary>
         [JsonProperty("SelectArea")]
-        public bool SelectArea { get; set; }
+        public bool? SelectArea { get; set; }
         /// <summary>
         /// FromArea
         /// </summary>
         [JsonProperty("FromArea")]
-        public string FromArea { get; set; }
+        public string? FromArea { get; set; }
 
         /// <summary>
         /// ToArea
         /// </summary>
         [JsonProperty("ToArea")]
-        public string ToArea { get; set; }
+        public string? ToArea { get; set; }
 
     }
 }

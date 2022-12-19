@@ -26,6 +26,7 @@ namespace MMSDemoTrucks
                 //add one or more documents to be created by Swagger generator
                 c.SwaggerDoc("AssignmentAreasTrucks", new OpenApiInfo { Description = "Assign trucks to areas Controller", Title = "Assign trucks to areas API", Version = "v1" });
                 c.SwaggerDoc("SalesOrders", new OpenApiInfo { Description = "Sale Orders", Title = "Sales Orders API", Version = "v1" });
+                c.SwaggerDoc("Test", new OpenApiInfo { Description = "Test", Title = "Test API", Version = "v1" });
             });
         }
 
@@ -40,6 +41,7 @@ namespace MMSDemoTrucks
                 //add one or more Swagger Json endpoints
                 c.SwaggerEndpoint("/swagger/AssignmentAreasTrucks/swagger.json", "Assignment Areas Trucks Business Logic  API V1");
                 c.SwaggerEndpoint("/swagger/SalesOrders/swagger.json", "Sales Orders Business Logic API V1");
+                c.SwaggerEndpoint("/swagger/Test/swagger.json", "Test API V1");
             });
 
             if (env.IsDevelopment())

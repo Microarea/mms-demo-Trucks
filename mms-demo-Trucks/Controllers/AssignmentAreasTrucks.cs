@@ -16,11 +16,12 @@ namespace MMSDemoTrucks.Controllers
     {
         private readonly IConfiguration configuration;
         private readonly string conn;
-        private readonly string owner = "CST_00002";
+        private readonly string owner;
         public AssignmentAreasTrucks(IConfiguration configuration)
         {
             this.configuration = configuration;
             this.conn = this.configuration.GetValue<string>("ConnectionDbSQL:strConn");
+            this.owner = this.configuration.GetValue<string>("ConnectionDbSQL:owner");
         }
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace MMSDemoTrucks.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("ExtractData")]
-        public ActionResult<ExtractDataResponse> ExtractData([FromBody] ExtractDataRequest request)
+        public async Task<ExtractDataResponse> ExtractData([FromBody] ExtractDataRequest request)
         {
             ExtractDataResponse response = new ExtractDataResponse();
             string areasFlat;
@@ -43,22 +44,22 @@ namespace MMSDemoTrucks.Controllers
             {
                 //manage your filters here and make a query 
                 //that populate the outRows structure
-                if (request is null)
+                if (request is null || request.AllAreas is null || request.SelectArea is null || request.FromArea is null || request.ToArea is null)
                 {
                     response.Success = false;
                     response.ErrorMessage = new ErrorMessage("Request is bad formatted");
-                    return new OkObjectResult(response);
+                    return response; //new OkObjectResult(response);
                 }
 
                 //get all areas selected
-                if (request.AllAreas)
-                    areasFlat = queries.ReadFrom("MA_Areas");
+                if (request.AllAreas.HasValue && request.AllAreas.Value)
+                    areasFlat = await queries.ReadFrom("MA_Areas");
                 else
-                    areasFlat = queries.ReadFrom("MA_Areas", "Area", request.FromArea, request.ToArea);
+                    areasFlat = await queries.ReadFrom("MA_Areas", "Area", request?.FromArea, request?.ToArea);
                 List<SalesAreas> salesAreas = JsonConvert.DeserializeObject<List<SalesAreas>>(areasFlat);
 
                 //get all tucks
-                trucksFlat = queries.ReadFromLogical("TrucksMaster", this.owner, true);
+                trucksFlat = await queries.ReadFromLogical("TrucksMaster", this.owner, true);
                 List<TrucksMaster> trucksMaster = new List<TrucksMaster>();
                 if (!(trucksFlat is null))
                     trucksFlat.ForEach(t =>
@@ -69,7 +70,7 @@ namespace MMSDemoTrucks.Controllers
                     });
 
                 //get all associations
-                existingAssociations = queries.ReadFromLogical("FP_SalesAreaTrucks", this.owner, false, true);
+                existingAssociations =await queries.ReadFromLogical("FP_SalesAreaTrucks", this.owner, false, true);
                 List<FP_SalesAreaTrucks> associations = new List<FP_SalesAreaTrucks>();
                 if (!(existingAssociations is null))
                     existingAssociations.ForEach(ea =>
@@ -102,14 +103,14 @@ namespace MMSDemoTrucks.Controllers
 
                 //set returnValue on response
                 response.ReturnValue = allAssociations;
-                return new OkObjectResult(response);
+                return response;//new OkObjectResult(response);
             }
             catch (Exception e)
             {
                 //throw new Exception("AssignmentAreasTrucks ExtractData exception  ", e);
                 response.Success = false;
                 response.ErrorMessage = new ErrorMessage("Cannot extract data");
-                return new OkObjectResult(response);
+                return response;
             }
         }
 
@@ -121,7 +122,7 @@ namespace MMSDemoTrucks.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("BatchExecute")]
-        public ActionResult<BatchExecuteResponse> BatchExecute([FromBody] BatchExecuteRequest request)
+        public async Task<BatchExecuteResponse> BatchExecute([FromBody] BatchExecuteRequest request)
         {
             List<FP_Areas_Trucks> associationsSaved = new List<FP_Areas_Trucks>();
             BatchExecuteResponse response = new BatchExecuteResponse();
@@ -134,20 +135,20 @@ namespace MMSDemoTrucks.Controllers
                 {
                     response.Success = false;
                     response.ErrorMessage = new ErrorMessage("Request is bad formatted");
-                    return new OkObjectResult(response);
+                    return response;
                 }
 
                 //clear all existing associations
-                if (!queries.ClearFromLogical("FP_SalesAreaTrucks", this.owner, false, true))
+                if (!await queries.ClearFromLogical("FP_SalesAreaTrucks", this.owner, false, true))
                 {
                     response.Success = false;
                     response.ErrorMessage = new ErrorMessage("Cannot update logical table fp_SalesAreaTrucks");
-                    return new OkObjectResult(response);
+                    return response;
                 }
 
                 if (!(request.ParamIn is null))
                 {
-                    request.ParamIn.ForEach(at =>
+                    request.ParamIn.ForEach(async at =>
                     {
                         if (at.Selected)
                         {
@@ -157,7 +158,7 @@ namespace MMSDemoTrucks.Controllers
                             string jsonContent = JsonConvert.SerializeObject(aToSave);
                             string keys = $"{aToSave.Area}##{aToSave.TruckCode}";
                             string parentKeys = aToSave.Area;
-                            bool success = queries.SaveEntityIntoLogicalTable("FP_SalesAreaTrucks", this.owner, jsonContent,
+                            bool success = await queries.SaveEntityIntoLogicalTable("FP_SalesAreaTrucks", this.owner, jsonContent,
                                 keys, parentKeys, false, true);
                             if (success)
                                 associationsSaved.Add(at);
@@ -168,14 +169,14 @@ namespace MMSDemoTrucks.Controllers
                 
                 response.ReturnValue = associationsSaved;
                 response.Success = true;
-                return new OkObjectResult(response);
+                return response;
             }
             catch (Exception e)
             {
                 //throw new Exception("MyBatchBLController BatchExecute exception  ", e);
                 response.Success = false;
                 response.ErrorMessage = new ErrorMessage("Cannot update logical table fp_SalesAreaTrucks");
-                return new OkObjectResult(response);
+                return response;
             }
         }
     } 

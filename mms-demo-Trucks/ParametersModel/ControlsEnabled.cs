@@ -7,9 +7,21 @@ namespace MMSDemoTrucks.ParametersModel
     public class ControlsEnabledRequest : BaseRequest
     {
         /// <summary>
-        /// ParamIn
+        /// Document FormMode
         /// </summary>
-        [JsonProperty("ParamIn")]
-        public List<FP_Areas_Trucks_FullModel> ParamIn { get; set; }
+        [JsonProperty("formMode")]
+        public int FormMode { get; set; } = -1;
+
+        [JsonProperty("SelectCarrier")]
+        public bool? SelectCarrier { get; set; }
+
+        [JsonProperty("SelectTruck")]
+        public bool? SelectTruck { get; set; }
+
+        [JsonProperty("Carrier")]
+        public string? Carrier { get; set; }
+
+        [JsonProperty("Truck")]
+        public string? Truck { get; set; }
     }
 }
