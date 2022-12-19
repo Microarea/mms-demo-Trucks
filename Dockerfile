@@ -16,4 +16,4 @@ RUN dotnet publish "mms-demo-Trucks.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "mms-demo-Trucks.dll"]
+ENTRYPOINT ["dotnet", "mymagostudio-service.dll"]
