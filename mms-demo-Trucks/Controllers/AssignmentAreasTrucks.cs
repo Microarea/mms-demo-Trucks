@@ -15,12 +15,12 @@ namespace MMSDemoTrucks.Controllers
     public class AssignmentAreasTrucks : ControllerBase
     {
         private readonly IConfiguration configuration;
-        private readonly string conn;
+        private readonly string conn = "Server=m4cprod-pgsql-db01.c8dgeymv054d.eu-west-1.rds.amazonaws.com;Port=5432;Database='DT-9A7E71';User ID='tb4_owner';Password='4TB.passw0rd';";
         private readonly string owner;
         public AssignmentAreasTrucks(IConfiguration configuration)
         {
             this.configuration = configuration;
-            this.conn = this.configuration.GetValue<string>("ConnectionDbSQL:strConn");
+            //this.conn = this.configuration.GetValue<string>("ConnectionDbSQL:strConn");
             this.owner = this.configuration.GetValue<string>("ConnectionDbSQL:owner");
         }
 
