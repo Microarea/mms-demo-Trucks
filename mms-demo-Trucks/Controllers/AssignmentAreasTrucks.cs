@@ -15,7 +15,8 @@ namespace MMSDemoTrucks.Controllers
     public class AssignmentAreasTrucks : ControllerBase
     {
         private readonly IConfiguration configuration;
-        private readonly string conn = "Server=m4cprod-pgsql-db01.c8dgeymv054d.eu-west-1.rds.amazonaws.com;Port=5432;Database='DT-9A7E71';User ID='tb4_owner';Password='4TB.passw0rd';";
+        //private readonly string conn = "Server=m4cprod-pgsql-db01.c8dgeymv054d.eu-west-1.rds.amazonaws.com;Port=5432;Database='DT-9A7E71';User ID='tb4_owner';Password='4TB.passw0rd';";
+        private readonly string conn = "Server=localhost;Port=5432;Database='DT-EBDDF9';User ID='postgres';Password='postgres';";
         private readonly string owner;
         public AssignmentAreasTrucks(IConfiguration configuration)
         {
@@ -59,7 +60,7 @@ namespace MMSDemoTrucks.Controllers
                 List<SalesAreas> salesAreas = JsonConvert.DeserializeObject<List<SalesAreas>>(areasFlat);
 
                 //get all tucks
-                trucksFlat = await queries.ReadFromLogical("TrucksMaster", this.owner, true);
+                trucksFlat = await queries.ReadFromLogical("CSTB9D2EFD3_00001_TrucksMasterLogical", this.owner, true);
                 List<TrucksMaster> trucksMaster = new List<TrucksMaster>();
                 if (!(trucksFlat is null))
                     trucksFlat.ForEach(t =>
@@ -70,7 +71,7 @@ namespace MMSDemoTrucks.Controllers
                     });
 
                 //get all associations
-                existingAssociations =await queries.ReadFromLogical("FP_SalesAreaTrucks", this.owner, false, true);
+                existingAssociations =await queries.ReadFromLogical("CSTB9D2EFD3_00001_FP_SalesAreaTrucks", this.owner, false, true);
                 List<FP_SalesAreaTrucks> associations = new List<FP_SalesAreaTrucks>();
                 if (!(existingAssociations is null))
                     existingAssociations.ForEach(ea =>
@@ -139,7 +140,7 @@ namespace MMSDemoTrucks.Controllers
                 }
 
                 //clear all existing associations
-                if (!await queries.ClearFromLogical("FP_SalesAreaTrucks", this.owner, false, true))
+                if (!await queries.ClearFromLogical("CSTB9D2EFD3_00001_FP_SalesAreaTrucks", this.owner, false, true))
                 {
                     response.Success = false;
                     response.ErrorMessage = new ErrorMessage("Cannot update logical table fp_SalesAreaTrucks");
@@ -158,7 +159,7 @@ namespace MMSDemoTrucks.Controllers
                             string jsonContent = JsonConvert.SerializeObject(aToSave);
                             string keys = $"{aToSave.Area}##{aToSave.TruckCode}";
                             string parentKeys = aToSave.Area;
-                            bool success = await queries.SaveEntityIntoLogicalTable("FP_SalesAreaTrucks", this.owner, jsonContent,
+                            bool success = await queries.SaveEntityIntoLogicalTable("CSTB9D2EFD3_00001_FP_SalesAreaTrucks", this.owner, jsonContent,
                                 keys, parentKeys, false, true);
                             if (success)
                                 associationsSaved.Add(at);

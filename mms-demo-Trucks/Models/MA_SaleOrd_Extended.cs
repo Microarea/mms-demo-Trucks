@@ -3,9 +3,9 @@ using Newtonsoft.Json;
 
 namespace MMSDemoTrucks.Models
 {
-    public class MA_SaleOrd_Extended
+    public class CSTB9D2EFD3_00001_MA_SaleOrd_Extended
     {
-        public MA_SaleOrd_Extended()
+        public CSTB9D2EFD3_00001_MA_SaleOrd_Extended()
         {
             this.SelectCarrier = new BaseModel<bool>();
             this.SelectTruck = new BaseModel<bool>();

@@ -2,6 +2,7 @@
 using MMSDemoTrucks.Models;
 using MMSDemoTrucks.ParametersModel;
 using System;
+using System.Diagnostics;
 
 namespace MMSDemoTrucks.Controllers
 {
@@ -15,6 +16,41 @@ namespace MMSDemoTrucks.Controllers
         {
 
         }
+
+        [HttpPost("Event")]
+        ///<summary>
+        /// Manage FireAction
+        ///</summary>
+        public ActionResult<EventResponse> ManageGenericEvent([FromBody] EventRequest request)
+        {
+            EventResponse response = new EventResponse();
+
+            try 
+            {
+                if (request is null)
+                {
+                    response.Success = false;
+                    response.ErrorMessage = new ErrorMessage("Request is bad formatted");
+                    return new OkObjectResult(response);
+                }
+
+                if (request.EventName.CompareTo("OnAfterExecuteUpdateDataView") == 0)
+                {
+                    Debug.Assert(false);
+                }
+
+                response.ReturnValue = true.ToString();
+                return new OkObjectResult(response);
+            }
+            catch (Exception e)
+            {
+                response.Success = false;
+                response.ErrorMessage = new ErrorMessage("Cannot execute SelectTruckValueChanged");
+                return new OkObjectResult(response);
+            }
+        }
+        
+        /// 
         /// <summary>
         /// Manages readonly status of dataObjs 
         /// </summary>
@@ -24,7 +60,7 @@ namespace MMSDemoTrucks.Controllers
         public ActionResult<BaseResponse> SelectTruckValueChanged([FromBody] SelectTruckCarrierRequest request)
         {
             BaseResponse response = new BaseResponse();
-            MA_SaleOrd_Extended saleOrd = new MA_SaleOrd_Extended();
+            CSTB9D2EFD3_00001_MA_SaleOrd_Extended saleOrd = new CSTB9D2EFD3_00001_MA_SaleOrd_Extended();
             try
             {
                 if (request is null || request.SelectCarrier is null || request.SelectTruck is null || request.Carrier is null || request.Truck is null)
@@ -63,7 +99,7 @@ namespace MMSDemoTrucks.Controllers
         public ActionResult<BaseResponse> SelectCarrierValueChanged([FromBody] SelectTruckCarrierRequest request)
         {
             BaseResponse response = new BaseResponse();
-            MA_SaleOrd_Extended saleOrd = new MA_SaleOrd_Extended();
+            CSTB9D2EFD3_00001_MA_SaleOrd_Extended saleOrd = new CSTB9D2EFD3_00001_MA_SaleOrd_Extended();
             try
             {
                 if (request is null || request.SelectCarrier is null || request.SelectTruck is null || request.Carrier is null || request.Truck is null)
@@ -103,7 +139,7 @@ namespace MMSDemoTrucks.Controllers
         public ActionResult<BaseResponse> ControlsEnabled([FromBody] ControlsEnabledRequest request)
         {
             BaseResponse response = new BaseResponse();
-            MA_SaleOrd_Extended saleOrd = new MA_SaleOrd_Extended();
+            CSTB9D2EFD3_00001_MA_SaleOrd_Extended saleOrd = new CSTB9D2EFD3_00001_MA_SaleOrd_Extended();
             try
             {
                
@@ -114,7 +150,17 @@ namespace MMSDemoTrucks.Controllers
                     return new OkObjectResult(response);
                 }
                 
-                if (request.FormMode == 2 /*FormModeType.New*/ || request.FormMode == 3 /*FormModeType.Edit*/)
+                if (request.FormMode == 2 /*FormModeType.New*/)
+                {
+                    saleOrd.SelectCarrier.value = true;
+                    saleOrd.SelectTruck.value = false;
+                    saleOrd.Truck.IsReadOnly = !saleOrd.SelectTruck.value;
+                    saleOrd.Carrier.IsReadOnly = !saleOrd.SelectCarrier.value;
+                    saleOrd.Carrier.value = string.Empty;
+                    saleOrd.Truck.value = string.Empty;
+                }
+
+                if (request.FormMode == 3 /*FormModeType.Edit*/)
                 {
                     if (request.SelectCarrier.HasValue && request.SelectCarrier.Value)
                     {
@@ -122,7 +168,7 @@ namespace MMSDemoTrucks.Controllers
                         saleOrd.SelectTruck.value = !saleOrd.SelectCarrier.value;
                         saleOrd.Truck.IsReadOnly = request.SelectCarrier.HasValue && request.SelectCarrier.Value;
                         saleOrd.Carrier.IsReadOnly = request.SelectCarrier.HasValue && !request.SelectCarrier.Value;
-                        saleOrd.Carrier.value = string.Empty;
+                        //saleOrd.Carrier.value = string.Empty;
                         saleOrd.Truck.value = string.Empty;
                     }
                     if (request.SelectTruck.HasValue && request.SelectTruck.Value)
@@ -132,7 +178,7 @@ namespace MMSDemoTrucks.Controllers
                         saleOrd.Truck.IsReadOnly = request.SelectTruck.HasValue && !request.SelectTruck.Value;
                         saleOrd.Carrier.IsReadOnly = request.SelectTruck.HasValue && request.SelectTruck.Value;
                         saleOrd.Carrier.value = string.Empty;
-                        saleOrd.Truck.value = string.Empty;
+                        //saleOrd.Truck.value = string.Empty;
                     }
                 }
 
