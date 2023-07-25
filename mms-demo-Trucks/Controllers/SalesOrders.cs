@@ -149,8 +149,20 @@ namespace MMSDemoTrucks.Controllers
                     response.ErrorMessage = new ErrorMessage("Request is bad formatted");
                     return new OkObjectResult(response);
                 }
-                
-                if (request.FormMode == 2 /*FormModeType.New*/)
+
+                if (request.FormMode == 1 /*FormModeType.Browse*/)
+                {
+                    saleOrd.SelectCarrier.value = request.SelectCarrier.Value;
+                    saleOrd.SelectCarrier.IsReadOnly = true;
+                    saleOrd.SelectTruck.value = request.SelectTruck.Value;
+                    saleOrd.SelectTruck.IsReadOnly = true;
+                    saleOrd.Truck.value = request.Truck;
+                    saleOrd.Truck.IsReadOnly = true;
+                    saleOrd.Carrier.value = request.Carrier;
+                    saleOrd.Carrier.IsReadOnly = true;
+                }
+
+                    if (request.FormMode == 2 /*FormModeType.New*/)
                 {
                     saleOrd.SelectCarrier.value = true;
                     saleOrd.SelectTruck.value = false;

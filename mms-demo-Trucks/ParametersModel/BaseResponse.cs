@@ -7,7 +7,7 @@ namespace MMSDemoTrucks.ParametersModel
         /// <summary>
         /// ReturnValue
         /// </summary>
-        [JsonProperty("retVal")]
+        [JsonProperty("returnValue")]
         public object ReturnValue { get; set; }
         /// <summary>
         /// Success
